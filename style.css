@@ -1,0 +1,15 @@
+body {
+	background-color: #aaa;
+	text-align: center;
+}
+
+canvas {
+	border: 1.5px solid black;
+	border-left-width: 0px;
+	border-right-width: 0px;
+}
+
+#pingpong{
+	width: 80%;
+	height: 80%;
+}
