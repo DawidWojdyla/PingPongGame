@@ -9,7 +9,7 @@ class Paddle
 		this.x         		= 0;
 		this.y         		= 0;
 		this.points     	= 0;
-		this.offset  		= 5;
+		this.offset  		= 3;
 		this.name     	= name;
 		this.length   	= length;
 		this.width 		= width;
@@ -64,8 +64,8 @@ function resetPlayingField(){
 	game.restart			= false;
 	game.ball.x          	= canvas.width/2;
     game.ball.y          	= canvas.height/2;
-    game.ball.offsetX  	= 5;
-    game.ball.offsetY  	= 3;
+    game.ball.offsetX  	= 2;
+    game.ball.offsetY  	= 1;
     
 	
     game.players[0].x     = 0;
@@ -80,16 +80,17 @@ function keyDownHandler(e) {
 			game.players[0].Up = true;
 			break;
 		case 75: 
-			game.players[0].Down = true;
+			game.players[1].Up = true;
 			break;
 		case 90: 
-			game.players[1].Up = true;
+			game.players[0].Down = true;
 			break;
 		case 77: 
 			game.players[1].Down = true;
 			break;
 		case 78: 
-			game.restart = true;
+			if(game.pause == true)
+				game.restart = true;
 			break;
 		case 32: 
 			game.pause = !game.pause;
@@ -103,10 +104,10 @@ function keyUpHandler(e) {
 			game.players[0].Up = false;
 			break;
 		case 75: 
-			game.players[0].Down = false;
+			game.players[1].Up = false;
 			break;
 		case 90: 
-			game.players[1].Up = false;
+			game.players[0].Down = false;
 			break;
 		case 77: 
 			game.players[1].Down = false;
@@ -137,6 +138,36 @@ function showHeadline(message){
 
 function showScores(){
 	//Wyświetlenie wyniku
+}
+
+function transformGame(){
+   //ball movement
+	game.ball.x += game.ball.offsetX;
+	game.ball.y += game.ball.offsetY;
+	
+	//paddles movement
+	if(game.players[0].Up && game.players[0].y > 0)
+		game.players[0].y -= game.players[0].offset;
+	
+	if(game.players[1].Up && game.players[1].y > 0)
+		game.players[1].y -= game.players[1].offset;
+	
+	if(game.players[0].Down && game.players[0].y +game.players[0].length < canvas.height)
+		game.players[0].y += game.players[0].offset;
+	
+	if(game.players[1].Down && game.players[1].y + game.players[1].length < canvas.height)
+		game.players[1].y += game.players[1].offset;
+	
+	//ball bouncing off the top/bottom 
+	 if(game.ball.y - game.ball.radius <= 0 || game.ball.y + game.ball.radius >= canvas.height)
+		game.ball.offsetY = - game.ball.offsetY;
+	
+/*	//getting a point or ball bouncing off the paddles
+	if(game.ball.x < game.player[0].x){
+		game.player[0].points++;
+		game.state = 2;
+		game.pause = true;
+	}*/
 }
 
 
@@ -185,5 +216,8 @@ function play() {
 
 	requestAnimationFrame(play);
 }
+
+initGame();
+play();
 
 
