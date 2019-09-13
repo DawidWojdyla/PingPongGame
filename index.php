@@ -6,7 +6,7 @@
     </head>
     <body>
         <h2>PingPong</h2>
-        <canvas id="pingpong">Niestety, Twoja przeglądarka nie obsługuje obiektów typu Canvas.</canvas>
+        <canvas id="pingpong" width="800" height="500">Niestety, Twoja przeglądarka nie obsługuje obiektów typu Canvas.</canvas>
 		<script src="pingpong.js" type="text/javascript"></script>
     </body>
 </html>

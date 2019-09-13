@@ -9,7 +9,7 @@ class Paddle
 		this.x         		= 0;
 		this.y         		= 0;
 		this.points     	= 0;
-		this.offset  		= 3;
+		this.offset  		= 5;
 		this.name     	= name;
 		this.length   	= length;
 		this.width 		= width;
@@ -46,11 +46,26 @@ class Ball
 	}
 }
 
+function speedUpBall(){
+	game.ball.offsetX *= 1.4;
+	game.ball.color = "orange";
+}
+
+function changeBallReflectionAngle(){
+	game.ball.offsetY *= 1.4;
+}
+
+function resetBall(){
+	game.ball.color 		= "blue";
+	game.ball.offsetX  	= 5;
+    game.ball.offsetY  	= 2;
+}
+
 function initGame(){
 	game.players 		= [];
-	game.players[0]	= new Paddle('Player 1', 30, 3, 'green');
-	game.players[1]	= new Paddle('Player 2', 30, 3, 'red');
-	game.ball 			= new Ball(3, 'blue');
+	game.players[0]	= new Paddle('Player 1', 80, 10, 'green');
+	game.players[1]	= new Paddle('Player 2', 80, 10, 'red');
+	game.ball 			= new Ball(10, 'blue');
 	
 	game.state 			= 0; 
 	game.pause 		= true;
@@ -61,11 +76,10 @@ function initGame(){
 
 function resetPlayingField(){
 	game.pause       	 	= true;
-	game.restart			= false;
 	game.ball.x          	= canvas.width/2;
     game.ball.y          	= canvas.height/2;
-    game.ball.offsetX  	= 2;
-    game.ball.offsetY  	= 1;
+    game.ball.offsetX  	= 5;
+    game.ball.offsetY  	= 2;
     
 	
     game.players[0].x     = 0;
@@ -128,16 +142,28 @@ function showIntroduction(){
 	//INFORMACJE WPROWADZAJĄCE, klawisze itp..
 }
 
-function showInfo(message){
-	//Wyświetl info
+function showHeadline(message){
+	ctx.font = '32px serif';
+    ctx.fillStyle = 'yellow';
+    ctx.textAlign = 'center';
+    ctx.fillText(message, canvas.width/2, 120);
 }
 
-function showHeadline(message){
-	//Wyświetl nagłówek
+function showInfo(message){
+	ctx.font = '30px serif';
+    ctx.fillStyle = 'blue';
+    ctx.textAlign = 'center';
+    ctx.fillText(message, canvas.width/2, 180);
 }
 
 function showScores(){
-	//Wyświetlenie wyniku
+	ctx.font = '40px serif';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText(game.players[0].points+" : "+game.players[1].points, canvas.width/2, 320);
+	ctx.font = '25px serif';
+	ctx.fillStyle = '#ddd';
+	ctx.fillText("Odbicia: " + game.ball.bounces, canvas.width/2, 360);
 }
 
 function transformGame(){
@@ -162,14 +188,66 @@ function transformGame(){
 	 if(game.ball.y - game.ball.radius <= 0 || game.ball.y + game.ball.radius >= canvas.height)
 		game.ball.offsetY = - game.ball.offsetY;
 	
-/*	//getting a point or ball bouncing off the paddles
-	if(game.ball.x < game.player[0].x){
-		game.player[0].points++;
+
+	//getting a point or ball bouncing off the paddles
+	if(game.ball.x < game.players[0].x ){
+		game.players[1].points++;
+		game.state = 3;
+		game.pause = true;
+		resetBall();
+	}
+	else if(game.ball.y >= game.players[0].y && game.ball.y  <= game.players[0].y + game.players[0].length && game.ball.x  - game.ball.radius<= game.players[0].x + game.players[0].width)
+	{
+		if(game.ball.y - game.players[0].y - game.players[0].length/2 < 7 && game.ball.y - game.players[0].y - game.players[0].length/2 > -7)
+		{
+			speedUpBall();
+		 }
+		else if (game.ball.y - game.ball.radius < game.players[0].y || game.ball.y + game.ball.radius > game.players[0].y + game.players[0].length)
+		{
+			changeBallReflectionAngle();
+		}
+		 else
+		 {
+			resetBall();
+		 }
+		 
+	  if(game.ball.offsetX < 0)
+		game.ball.offsetX = - game.ball.offsetX ; 
+		game.ball.bounces++;
+	  
+	  
+	  
+	}
+	
+	if(game.ball.x > game.players[1].x  + game.players[1].width){
+		game.players[0].points++;
 		game.state = 2;
 		game.pause = true;
-	}*/
-}
+		resetBall();
+	}
+	else if(game.ball.y >= game.players[1].y && game.ball.y <= game.players[1].y + game.players[1].length   && game.ball.x + game.ball.radius >= game.players[1].x )
+	{
+		if(game.ball.y  - game.players[1].y - game.players[1].length/2 < 7 && game.ball.y - game.players[1].y - game.players[1].length/2 > -7)
+		{
+			speedUpBall();
 
+		 }
+		else if (game.ball.y - game.ball.radius < game.players[1].y || game.ball.y + game.ball.radius > game.players[1].y + game.players[1].length)
+		{
+			changeBallReflectionAngle();
+		}
+		 else
+		 {
+			resetBall();
+		 }
+		
+		if(game.ball.offsetX > 0)
+			game.ball.offsetX = - game.ball.offsetX; 
+			game.ball.bounces++;
+		
+		
+  }
+}
 
 
 function play() {
@@ -205,9 +283,10 @@ function play() {
         switch(game.state) {
             case 0:
             case 2:
-            case 3:
+            case 3: 
                 game.state = 1;
 				game.restart = false;
+				game.ball.bounces = 0;
                 break;
             default:
                 transformGame();
