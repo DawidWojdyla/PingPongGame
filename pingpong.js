@@ -56,9 +56,9 @@ function changeBallReflectionAngle(){
 }
 
 function resetBall(){
-	game.ball.color 		= "blue";
-	game.ball.offsetX  	= 5;
-    game.ball.offsetY  	= 2;
+	game.ball.color 	= "blue";
+	game.ball.offsetX = (game.ball.offsetX > 0) ? 6 : -6; 
+	game.ball.offsetY = (game.ball.offsetY > 0) ? 3 : -3; 
 }
 
 function initGame(){
@@ -78,8 +78,8 @@ function resetPlayingField(){
 	game.pause       	 	= true;
 	game.ball.x          	= canvas.width/2;
     game.ball.y          	= canvas.height/2;
-    game.ball.offsetX  	= 5;
-    game.ball.offsetY  	= 2;
+    game.ball.offsetX  	= 6;
+    game.ball.offsetY  	= 3;
     
 	
     game.players[0].x     = 0;
@@ -211,9 +211,10 @@ function transformGame(){
 			resetBall();
 		 }
 		 
-	  if(game.ball.offsetX < 0)
+	  if(game.ball.offsetX < 0){
 		game.ball.offsetX = - game.ball.offsetX ; 
 		game.ball.bounces++;
+	  }
 	  
 	  
 	  
@@ -241,9 +242,10 @@ function transformGame(){
 			resetBall();
 		 }
 		
-		if(game.ball.offsetX > 0)
+		if(game.ball.offsetX > 0){
 			game.ball.offsetX = - game.ball.offsetX; 
 			game.ball.bounces++;
+		}
 		
 		
   }
