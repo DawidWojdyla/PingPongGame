@@ -24,6 +24,19 @@ class Paddle
 			ctx.closePath();
 		}
 	}
+	
+	moveUp = function(){
+		this.y  -= this.offset;
+	}
+	
+	moveDown = function(){
+		this.y  += this.offset;
+	}
+	
+	increaseNumberOfPoints = function(){
+		this.points++;
+	}
+	
 }
 
 class Ball 
@@ -44,22 +57,42 @@ class Ball
 			ctx.closePath();
 		}
 	}
+	
+	move = function(){
+		this.x += this.offsetX;
+		this.y += this.offsetY;
+	}
+	
+	changeVerticalDirectionToOpposite = function(){
+		this.offsetY *= -1; 
+	}
+	
+	changeHorizontalDirectionToOpposite = function(){
+		this.offsetX *= -1; 
+	}
+	
+	increaseNumberOfBounces = function(){
+		this.bounces++;
+	}
+	
+	speedUp = function() {
+		this.offsetX *= 1.5;
+		this.color = "orange";
+	}
+	
+	changeReflectionAngle = function() {
+		this.offsetY *= 1.3;
+	}
+	
+	reset = function (){
+	this.color 	= "blue";
+	this.offsetX = (this.offsetX > 0) ? 6 : -6; 
+	this.offsetY = (this.offsetY > 0) ? 3 : -3; 
+	}
+	
 }
 
-function speedUpBall(){
-	game.ball.offsetX *= 1.5;
-	game.ball.color = "orange";
-}
 
-function changeBallReflectionAngle(){
-	game.ball.offsetY *= 1.3;
-}
-
-function resetBall(){
-	game.ball.color 	= "blue";
-	game.ball.offsetX = (game.ball.offsetX > 0) ? 6 : -6; 
-	game.ball.offsetY = (game.ball.offsetY > 0) ? 3 : -3; 
-}
 
 function initGame(){
 	game.players 		= [];
@@ -67,7 +100,7 @@ function initGame(){
 	game.players[1]	= new Paddle('Player 2', 80, 15, 'red');
 	game.ball 			= new Ball(10, 'blue');
 	
-	game.state 			= 0; 
+	game.state 		= 0; 
 	game.pause 		= true;
 	game.restart		= false;
 
@@ -177,82 +210,82 @@ function showScores(){
 }
 
 function transformGame(){
-   //ball movement
-	game.ball.x += game.ball.offsetX;
-	game.ball.y += game.ball.offsetY;
+	
+	game.ball.move();
 	
 	//paddles movement
-	if(game.players[0].Up && game.players[0].y > 0)
-		game.players[0].y -= game.players[0].offset;
+	if(game.players[0].Up && game.players[0].y > 6)
+		game.players[0].moveUp();
 	
-	if(game.players[1].Up && game.players[1].y > 0)
-		game.players[1].y -= game.players[1].offset;
+	if(game.players[0].Down && game.players[0].y +game.players[0].length < canvas.height - 6)
+		game.players[0].moveDown();
 	
-	if(game.players[0].Down && game.players[0].y +game.players[0].length < canvas.height)
-		game.players[0].y += game.players[0].offset;
+	if(game.players[1].Up && game.players[1].y > 6)
+		game.players[1].moveUp();
 	
-	if(game.players[1].Down && game.players[1].y + game.players[1].length < canvas.height)
-		game.players[1].y += game.players[1].offset;
+	
+	if(game.players[1].Down && game.players[1].y + game.players[1].length < canvas.height - 6)
+		game.players[1].moveDown();
 	
 	//ball bouncing off the top/bottom 
 	 if(game.ball.y - game.ball.radius <= 0 || game.ball.y + game.ball.radius >= canvas.height)
-		game.ball.offsetY = - game.ball.offsetY;
+		game.ball.changeVerticalDirectionToOpposite();
 	
 
 	//getting a point or ball bouncing off the paddles
 	if(game.ball.x < game.players[0].x ){
-		game.players[1].points++;
+		game.players[1].increaseNumberOfPoints();
 		game.state = 3;
 		game.pause = true;
-		resetBall();
+		game.ball.reset();
 	}
 	else if(game.ball.y >= game.players[0].y && game.ball.y  <= game.players[0].y + game.players[0].length && game.ball.x  - game.ball.radius<= game.players[0].x + game.players[0].width)
 	{
 		if(game.ball.y - game.players[0].y - game.players[0].length/2 < 7 && game.ball.y - game.players[0].y - game.players[0].length/2 > -7)
 		{
-			speedUpBall();
+			game.ball.speedUp();
 		 }
 		else if (game.ball.y - game.ball.radius < game.players[0].y || game.ball.y + game.ball.radius > game.players[0].y + game.players[0].length)
 		{
-			changeBallReflectionAngle();
+			game.ball.changeReflectionAngle();
 		}
 		 else
 		 {
-			resetBall();
+			game.ball.reset();
 		 }
 		 
 	  if(game.ball.offsetX < 0){
-		game.ball.offsetX = - game.ball.offsetX ; 
-		game.ball.bounces++;
+		game.ball.changeHorizontalDirectionToOpposite();
+		game.ball.increaseNumberOfBounces();
 	  }
 	  
 	}
 	
 	if(game.ball.x > game.players[1].x  + game.players[1].width){
-		game.players[0].points++;
+		game.players[0].increaseNumberOfPoints();
 		game.state = 2;
 		game.pause = true;
-		resetBall();
+		game.ball.reset();
 	}
 	else if(game.ball.y >= game.players[1].y && game.ball.y <= game.players[1].y + game.players[1].length   && game.ball.x + game.ball.radius >= game.players[1].x )
 	{
 		if(game.ball.y  - game.players[1].y - game.players[1].length/2 < 7 && game.ball.y - game.players[1].y - game.players[1].length/2 > -7)
 		{
-			speedUpBall();
+			game.ball.speedUp();
 
 		 }
 		else if (game.ball.y - game.ball.radius < game.players[1].y || game.ball.y + game.ball.radius > game.players[1].y + game.players[1].length)
 		{
-			changeBallReflectionAngle();
+			game.ball.changeReflectionAngle();
 		}
 		 else
 		 {
-			resetBall();
+			game.ball.reset();
 		 }
 		
 		if(game.ball.offsetX > 0){
-			game.ball.offsetX = - game.ball.offsetX; 
-			game.ball.bounces++;
+			game.ball.changeHorizontalDirectionToOpposite();
+			game.ball.increaseNumberOfBounces();
 		}	
   }
 }
