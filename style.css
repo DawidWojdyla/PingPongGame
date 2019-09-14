@@ -1,15 +1,11 @@
 body {
-	background-color: #aaa;
+	background-color: #555;
+	font-family: Helvetica;
 	text-align: center;
+	color: #ccc;
 }
 
 canvas {
-	border: 1.5px solid black;
-	border-left-width: 0px;
-	border-right-width: 0px;
-}
-
-#pingpong{/*
-	width: 800px;
-	height: 500px;*/
+	border: 2px solid black;
+	background-color: #aaa;
 }

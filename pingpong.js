@@ -9,7 +9,7 @@ class Paddle
 		this.x         		= 0;
 		this.y         		= 0;
 		this.points     	= 0;
-		this.offset  		= 5;
+		this.offset  		= 6;
 		this.name     	= name;
 		this.length   	= length;
 		this.width 		= width;
@@ -47,12 +47,12 @@ class Ball
 }
 
 function speedUpBall(){
-	game.ball.offsetX *= 1.4;
+	game.ball.offsetX *= 1.5;
 	game.ball.color = "orange";
 }
 
 function changeBallReflectionAngle(){
-	game.ball.offsetY *= 1.4;
+	game.ball.offsetY *= 1.3;
 }
 
 function resetBall(){
@@ -63,29 +63,38 @@ function resetBall(){
 
 function initGame(){
 	game.players 		= [];
-	game.players[0]	= new Paddle('Player 1', 80, 10, 'green');
-	game.players[1]	= new Paddle('Player 2', 80, 10, 'red');
+	game.players[0]	= new Paddle('Player 1', 80, 15, 'green');
+	game.players[1]	= new Paddle('Player 2', 80, 15, 'red');
 	game.ball 			= new Ball(10, 'blue');
 	
 	game.state 			= 0; 
 	game.pause 		= true;
 	game.restart		= false;
-	
+
 	resetPlayingField();
+	showIntroduction();
 }
 
 function resetPlayingField(){
 	game.pause       	 	= true;
-	game.ball.x          	= canvas.width/2;
-    game.ball.y          	= canvas.height/2;
-    game.ball.offsetX  	= 6;
-    game.ball.offsetY  	= 3;
-    
 	
-    game.players[0].x     = 0;
-    game.players[1].x     = canvas.width - game.players[1].width;
+	game.players[0].x     = 15;
+    game.players[1].x     = canvas.width - game.players[1].width - 15;
     game.players[0].y     = canvas.height/2 - game.players[0].length/2;
     game.players[1].y     = game.players[0].y;
+	
+	if(game.state != 2){
+		game.ball.x          	= game.players[0].x + game.players[0].width + 12;
+		game.ball.y          	= canvas.height/2;
+		game.ball.offsetX  	= 6;
+		game.ball.offsetY  	= 3;
+	}
+	else{
+		game.ball.x          	= game.players[1].x - 12;
+		game.ball.y          	= canvas.height/2;
+		game.ball.offsetX  	= -6;
+		game.ball.offsetY  	= -3;
+	}
 }
 
 function keyDownHandler(e) {
@@ -133,37 +142,38 @@ document.addEventListener("keydown", keyDownHandler);
 document.addEventListener("keyup", keyUpHandler);
 
 function drawGame() {
-    game.ball.draw();
     game.players[0].draw();
     game.players[1].draw();
+	if(game.state == 1)
+	game.ball.draw();
 }
 
 function showIntroduction(){
-	//INFORMACJE WPROWADZAJĄCE, klawisze itp..
+	alert("Witaj w Grze Ping Pong,\n Zieloną paletką steruje się za pomocą klawiszy A oraz Z, natomiast czerwoną za pomocą K oraz M.\nGdy odbijesz piłkę na skraju paletki to zmieni kąt odbicia. \nGdy odbijesz piłkę środkiem paletki to piłka przyśpieszy. \nGdy odbijesz piłkę przyśpieszoną środkiem paletki, piłka dodatkowo przyśpieszy lub gdy odbijesz ją na skraju paletki dodatkowo zmieni kąt odbicia.");
 }
 
 function showHeadline(message){
-	ctx.font = '32px serif';
+	ctx.font = '28px Helvetica';
     ctx.fillStyle = 'yellow';
     ctx.textAlign = 'center';
     ctx.fillText(message, canvas.width/2, 120);
 }
 
 function showInfo(message){
-	ctx.font = '30px serif';
+	ctx.font = '16px Helvetica';
     ctx.fillStyle = 'blue';
     ctx.textAlign = 'center';
     ctx.fillText(message, canvas.width/2, 180);
 }
 
 function showScores(){
-	ctx.font = '40px serif';
+	ctx.font = '48px Helvetica';
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
-    ctx.fillText(game.players[0].points+" : "+game.players[1].points, canvas.width/2, 320);
-	ctx.font = '25px serif';
+    ctx.fillText(game.players[0].points+" : "+game.players[1].points, canvas.width/2, 260);
+	ctx.font = '22px Helvetica';
 	ctx.fillStyle = '#ddd';
-	ctx.fillText("Odbicia: " + game.ball.bounces, canvas.width/2, 360);
+	ctx.fillText("Odbicia: " + game.ball.bounces, canvas.width/2, 300);
 }
 
 function transformGame(){
@@ -216,8 +226,6 @@ function transformGame(){
 		game.ball.bounces++;
 	  }
 	  
-	  
-	  
 	}
 	
 	if(game.ball.x > game.players[1].x  + game.players[1].width){
@@ -245,9 +253,7 @@ function transformGame(){
 		if(game.ball.offsetX > 0){
 			game.ball.offsetX = - game.ball.offsetX; 
 			game.ball.bounces++;
-		}
-		
-		
+		}	
   }
 }
 
@@ -259,7 +265,6 @@ function play() {
     if (game.pause) {
         switch(game.state) {
             case 0:
-                showIntroduction();
                 showInfo('Wciśnij SPACJĘ, aby zacząć grę');
                 break;
             case 2:
